@@ -1,0 +1,16 @@
+# Get the current git branch name (if available)
+function parse_git_branch () {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+# Returns "*" if the current git branch is dirty.
+function parse_git_dirty {
+  [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]] && echo "*"
+}
+ 
+RED="\[\033[0;31m\]"
+YELLOW="\[\033[0;33m\]"
+GREEN="\[\033[0;32m\]"
+NO_COLOR="\[\033[0m\]"
+
+PS1="$GREEN\u$NO_COLOR:\W$YELLOW\$(parse_git_branch)$RED\$(parse_git_dirty)$NO_COLOR\$ "
