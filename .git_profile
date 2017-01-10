@@ -7,10 +7,20 @@ function parse_git_branch () {
 function parse_git_dirty {
   [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]] && echo "*"
 }
- 
+
+# Returns "+" if the current git branch has commits which needs to be pushed to server
+function parse_git_commits {
+  [[ $(git status 2> /dev/null | grep "ahead") != "" ]] && echo "+"
+}
+
+# Returns "#" if the current git branch has files which are added but yet to be committed.
+function parse_git_add {
+  [[ $(git status 2> /dev/null | grep "Changes to be committed") != "" ]] && echo "#"
+}
+
 RED="\[\033[0;31m\]"
 YELLOW="\[\033[0;33m\]"
 GREEN="\[\033[0;32m\]"
 NO_COLOR="\[\033[0m\]"
 
-PS1="$GREEN\u$NO_COLOR:\W$YELLOW\$(parse_git_branch)$RED\$(parse_git_dirty)$NO_COLOR\$ "
+PS1="$GREEN\u$NO_COLOR:\W$RED\$(parse_git_branch)$RED\$(parse_git_dirty)\$(parse_git_add)\$(parse_git_commits)$NO_COLOR\$ "
